@@ -10,6 +10,10 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from PIL import ImageDraw, ImageFont
 from PIL import Image as PILImage
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
 
 #login as the bot without giving away token on github
 load_dotenv()
@@ -142,9 +146,15 @@ async def search(ctx):
     search_url = "http://www.google.hr/searchbyimage/upload" 
     multipart = {"encoded_image": ("temp.png", open("temp.png", "rb")), "image_content": ''}
     r = requests.post(search_url, files=multipart, allow_redirects=False)
-    #provide the user with a helpful link to the data
-    #may want to simulate a browser to read the html page to provide more data in Discord
-    await ctx.message.reply(r.headers["Location"])
+
+    options = Options()
+    options.headless = True
+
+    driver = webdriver.Firefox(options=options)
+    driver.get(r.headers["Location"])
+    element = driver.find_element(By.CLASS_NAME, "r5a77d")
+
+    await ctx.message.reply(element.text)
 
 @bot.command(name="caption")
 async def caption(ctx, *, caption_text):
