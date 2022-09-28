@@ -174,4 +174,23 @@ async def caption(ctx, *, caption_text):
     final_image = caption_image(BytesIO(r.content), caption_text)
     await ctx.message.reply(file=discord.File(BytesIO(final_image), filename=f"captioned-{image_filename}"))
 
+@bot.command(name="mirror")
+async def mirror(ctx, arg="flip"):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    with Image(filename="temp.png") as image:
+        if arg == "flip":
+            image.flip()
+        elif arg == "flop":
+            image.flop()
+
+        image.save(filename="temp.png")
+
+    await ctx.message.reply(file=discord.File("temp.png"))
+    
+
 bot.run(DISCORD_TOKEN)
