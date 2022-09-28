@@ -100,4 +100,17 @@ async def rotate(ctx, arg=180):
 
     await ctx.message.reply(file=discord.File("temp.png"))
 
+@bot.command(name="search")
+async def search(ctx):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    search_url = "http://www.google.hr/searchbyimage/upload" 
+    multipart = {"encoded_image": ("temp.png", open("temp.png", "rb")), "image_content": ''}
+    r = requests.post(search_url, files=multipart, allow_redirects=False)
+    await ctx.message.reply(r.headers["Location"])
+
 bot.run(DISCORD_TOKEN)
