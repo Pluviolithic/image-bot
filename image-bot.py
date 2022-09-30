@@ -157,7 +157,7 @@ async def search(ctx):
     await ctx.message.reply(element.text)
 
 @bot.command(name="caption")
-async def caption(ctx, *, caption_text):
+async def caption(ctx, *, caption_text): #the star tells the api to collect all inputs and put them into caption_text
     if not caption_text:
         await ctx.message.reply("Please include some caption text after the `!caption` command. For example `!caption \"Hello world!\"")
         return
@@ -192,5 +192,64 @@ async def mirror(ctx, arg="flip"):
 
     await ctx.message.reply(file=discord.File("temp.png"))
     
+@bot.command(name="sepiafy")
+async def sepiafy(ctx, threshold=1):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    with Image(filename="temp.png") as image:
+        image.sepia_tone(threshold)
+        image.save(filename="temp.png")
+
+    await ctx.message.reply(file=discord.File("temp.png"))
+
+
+@bot.command(name="grayscale")
+async def grayscale(ctx, threshold=1):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    with Image(filename="temp.png") as image:
+        image.type = "grayscale"
+        image.save(filename="temp.png")
+
+    await ctx.message.reply(file=discord.File("temp.png"))
+
+
+#reference: https://docs.wand-py.org/en/0.6.4/wand/image.html#wand.image.COLORSPACE_TYPES
+@bot.command(name="transform")
+async def transform(ctx, arg="grayscale"):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    with Image(filename="temp.png") as image:
+        image.transform_colorspace(arg)
+        image.save(filename="temp.png")
+
+    await ctx.message.reply(file=discord.File("temp.png"))
+
+
+@bot.command(name="simulate")
+async def simulate(ctx, arg=1.5):
+    if not ctx.message.attachments:
+        await ctx.message.reply("Please attach an image for me to read.")
+        return
+
+    download_image(ctx)
+
+    with Image(filename="temp.png") as image:
+        image.blue_shift(arg)
+        image.save(filename="temp.png")
+
+    await ctx.message.reply(file=discord.File("temp.png"))
 
 bot.run(DISCORD_TOKEN)
